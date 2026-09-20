@@ -1,0 +1,16 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+build/
+coverage/
+.sonata/bin/
+.skylos/
+.pi/sessions/
+
+# Harness files that ~/.gitignore_global would otherwise hide.
+# check-sonata.sh requires these whenever the manifest lists claude as a target.
+!CLAUDE.md
+!.claude/
