@@ -12,9 +12,9 @@
   "createdAt": "2026-09-19",
   "updatedAt": "2026-09-19T19:00:54.047Z",
   "setup": {
-    "status": "pending",
+    "status": "ready",
     "version": 1,
-    "completedAt": null
+    "completedAt": "2026-09-20T18:17:30.318Z"
   },
   "files": {
     ".agents/skills/sonata-audit/agents/openai.yaml": "5a33b7150dfbf5045bb799d84e9abb50fd1c25c8275ae4f6abdf004990b2115c",
