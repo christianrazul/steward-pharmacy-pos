@@ -8,6 +8,21 @@ const execFileAsync = promisify(execFile);
 const MAX_BUFFER = 100 * 1024 * 1024;
 const SKYLOS_CATEGORIES = ['danger', 'security', 'secrets', 'quality'];
 
+// Local modification. Skylos analyses only the languages listed in its own --help output, but
+// parses whatever it is handed. Passing lockfiles and JSON made it report them as broken
+// JavaScript, so changed paths are narrowed to the extensions it actually understands.
+const SKYLOS_EXTENSIONS = new Set([
+  '.py', '.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx', '.mts', '.cts',
+  '.go', '.java', '.kt', '.kts', '.php', '.rs', '.dart', '.cs'
+]);
+
+// Local modification. Skylos sweeps the whole project for secrets regardless of the paths it is
+// given, and reads dependency integrity hashes as high-entropy credentials. Lockfiles are
+// generated, so their secrets findings are dropped.
+const LOCKFILES = new Set([
+  'pnpm-lock.yaml', 'package-lock.json', 'yarn.lock', 'bun.lock', 'bun.lockb', 'Cargo.lock'
+]);
+
 export async function readPolicy(root) {
   const file = path.join(root, '.sonata', 'quality-gates.json');
   const policy = JSON.parse(await readFile(file, 'utf8'));
@@ -142,12 +157,13 @@ export async function recommendScc(root) {
 }
 
 export async function runSkylos(cwd, files, configPath) {
-  if (!files.length) return {};
+  const sources = files.filter((file) => SKYLOS_EXTENSIONS.has(path.extname(file).toLowerCase()));
+  if (!sources.length) return {};
   const args = [
     '--config-file', configPath,
     '--danger', '--secrets', '--quality',
     '--format', 'json', '--no-provenance',
-    ...files
+    ...sources
   ];
   const { stdout } = await run('skylos', args, { cwd });
   return parseJson(stdout, 'Skylos');
@@ -194,7 +210,9 @@ function collectFindings(report, root, allowed) {
   for (const category of SKYLOS_CATEGORIES) {
     for (const raw of report?.[category] || []) {
       const file = normalizeFindingPath(raw.file, root);
-      if (file && allowed.has(file)) findings.push({ category, path: file, raw });
+      if (!file || !allowed.has(file)) continue;
+      if (category === 'secrets' && LOCKFILES.has(path.basename(file))) continue;
+      findings.push({ category, path: file, raw });
     }
   }
   return findings;

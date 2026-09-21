@@ -6,6 +6,8 @@ node_modules/
 dist/
 build/
 coverage/
+*.local
+*.tsbuildinfo
 .sonata/bin/
 .skylos/
 .pi/sessions/

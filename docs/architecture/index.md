@@ -2,18 +2,27 @@
 
 ## Current Shape
 
-- Kind: greenfield. No application code exists yet.
-- Stack: Tauri 2 desktop shell; React 19 with TypeScript, Vite, and Tailwind; SQLite; pnpm.
+- Kind: a runnable shell exists. No point-of-sale behavior is implemented.
+- Stack: Tauri 2 desktop shell; React 19 with TypeScript, Vite, and Tailwind 4; SQLite; pnpm.
 - Deployment: one on-premise machine in a single store. Local-first, offline-capable.
 - Cloud: none. Sync is the stated destination but is deferred past the current milestone.
 
 ## System Map
 
-Only what is decided is recorded here. Layers get documented when the code needs them.
+Only what exists is recorded here. Layers get documented when the code needs them.
 
-- Till interface: catalog search, cart, discount application, cash tender, sale completion.
-- Local database: SQLite on the store machine, the source of truth for catalog, sales, and stock.
-- No server, no cloud component, and no second terminal exists.
+- `src/` — React till interface. `App.tsx` renders an empty counter screen and reports database
+  state.
+- `src/lib/database.ts` — the only seam that opens the database. Everything reaching SQLite goes
+  through it, so schema, migrations, and a future sync engine have one place to attach.
+- `src-tauri/` — Rust shell. `lib.rs` registers `tauri-plugin-sql` and nothing else; the demo
+  `greet` command and `tauri-plugin-opener` were removed rather than left as scaffolding.
+- Database file: `~/Library/Application Support/com.christianrazul.steward/steward.db`, resolved
+  by the SQL plugin from the `sqlite:steward.db` URL.
+- No server, no cloud component, no second terminal, and no schema yet.
+
+Planned till behavior — catalog search, cart, discount application, cash tender, sale completion —
+is specified in the project brief and not yet built.
 
 ## Data Decisions That Precede The Code
 
