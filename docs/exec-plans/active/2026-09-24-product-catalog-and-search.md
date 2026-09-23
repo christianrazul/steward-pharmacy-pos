@@ -22,6 +22,7 @@ its listed criteria pass with the network disconnected.
 
 ### 1. Add and search products with starting counts
 
+- Issue: [#1](https://github.com/christianrazul/steward-pharmacy-pos/issues/1).
 - Blocked by: nothing.
 - Delivers: add a product with its starting count, then find it by typing any mix of generic name,
   brand name, strength or dosage form, and see its price and quantity on hand.
@@ -33,6 +34,7 @@ its listed criteria pass with the network disconnected.
 
 ### 2. Edit product details
 
+- Issue: [#2](https://github.com/christianrazul/steward-pharmacy-pos/issues/2).
 - Blocked by: 1.
 - Delivers: open a product from search, correct its details, and see the change in search. Stock
   is not touched.
@@ -41,6 +43,7 @@ its listed criteria pass with the network disconnected.
 
 ### 3. Correct stock with a counted total
 
+- Issue: [#3](https://github.com/christianrazul/steward-pharmacy-pos/issues/3).
 - Blocked by: 2.
 - Delivers: enter a counted total and a reason for a product. Quantity on hand becomes that total,
   and the history records the difference.
@@ -69,4 +72,5 @@ Skylos gate.
 
 ## Progress Log
 
-- 2026-09-24: Plan approved. No ticket started.
+- 2026-09-24: Plan approved. Issues #1, #2 and #3 published to GitHub in blocker order. No ticket
+  started.
