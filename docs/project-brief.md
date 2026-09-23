@@ -22,8 +22,8 @@ Acceptance behavior, observed with the network disconnected:
 
 1. A cashier finds a product by name and adds it to a cart with an adjustable quantity.
 2. The cart shows per-line amounts and a total in PHP, with 12% VAT handled correctly.
-3. A senior citizen or PWD discount applies to eligible lines, showing the VAT exemption and the
-   20% discount as separate, visible amounts.
+3. A senior citizen or PWD discount applies to lines whose product is marked discount-eligible,
+   showing the VAT exemption and the 20% discount as separate, visible amounts.
 4. The cashier enters cash tendered and the system computes change.
 5. Completing the sale writes an immutable sale record with a unique reference, appends one stock
    movement per line, and the sale can be retrieved afterwards.
@@ -49,6 +49,10 @@ Item marked 112.00 (VAT-inclusive)
 Approved during setup. Re-verify against how the store rings one up before this handles real
 sales: discounting first and stripping VAT afterwards produces a different amount, and that is an
 audit finding rather than a test failure.
+
+This computation applies to VAT-able products only. A product that is VAT-exempt under RA 11467
+has no VAT to strip, so the 20% applies to the full price: an exempt item marked 100.00 comes to
+80.00. See the [product catalog spec](specs/2026-09-21-product-catalog-and-search.md).
 
 ## Problem
 
@@ -77,7 +81,7 @@ and leaves the store's most audit-sensitive arithmetic dependent on whoever is a
 - Purchase orders, supplier management, receiving
 - Batch and expiry tracking, FEFO dispensing
 - Barcode scanner and receipt printer hardware
-- Staff accounts, roles, and audit trail
+- Staff accounts, roles, and audit trail, including restricting stock changes to admins
 - RA 9165 dangerous drugs register
 - BIR accreditation and Permit to Use
 
