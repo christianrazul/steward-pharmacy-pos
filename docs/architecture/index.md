@@ -21,8 +21,9 @@ Only what exists is recorded here. Layers get documented when the code needs the
   `greet` command and `tauri-plugin-opener` were removed rather than left as scaffolding.
 - Database file: resolved by the SQL plugin from the `sqlite:steward.db` URL into the app's data
   directory. On the macOS development machine that is
-  `~/Library/Application Support/com.christianrazul.steward/steward.db`. On the Windows till it is
-  expected under `%APPDATA%\com.christianrazul.steward\`, not yet verified on Windows.
+  `~/Library/Application Support/com.christianrazul.steward/steward.db`. The plugin resolves the
+  directory with `app_config_dir()`, confirmed in its source, which on Windows is
+  `%APPDATA%\com.christianrazul.steward\`. Not yet observed on a Windows machine.
 - No server, no cloud component, no second terminal, and no schema yet.
 
 Planned till behavior — catalog search, cart, discount application, cash tender, sale completion —
@@ -40,6 +41,26 @@ affordances are not.
 - **Stock is a ledger of movements, not a mutable quantity column.** Two tills decrementing the
   same integer offline is the one conflict that cannot be cleanly resolved, whereas summing
   movements always converges. Current stock is derived.
+
+## Database Access
+
+Decided in the [cart and cash sale spec](../specs/2026-09-24-cart-and-cash-sale.md) after reading
+the source of tauri-plugin-sql 2.4.1:
+
+- Reads and single-statement writes go through the SQL plugin from TypeScript.
+- Writes that must succeed together, such as a sale or a product with its starting count, are Rust
+  commands in `lib.rs` that borrow the plugin's pool (`DbInstances`) and run one transaction. The
+  plugin has no transaction API, and each of its calls borrows its own pooled connection.
+- Money rules live in TypeScript only. Rust commands write the amounts they are given.
+- The plugin binds every JavaScript number as a float and every boolean as JSON text. Money stays
+  exact because INTEGER columns store whole-number floats as integers; flags are passed as 0 and 1
+  and checked by the schema.
+- sqlx-sqlite 0.8.6, underneath the plugin, turns foreign keys on for every pooled connection and
+  leaves the journal mode and sync setting at SQLite's defaults: a rollback journal with full
+  sync, so a committed sale survives a power cut. Confirmed in its source; validated at runtime.
+- Constraints on append-only tables stay limited to rules that will not change. Changing one means
+  rebuilding the table around its protective triggers, so anything likely to grow, such as movement
+  reasons, lives in a lookup table or an index.
 
 ## Boundary Rule
 

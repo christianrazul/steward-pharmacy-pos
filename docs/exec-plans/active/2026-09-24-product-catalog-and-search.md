@@ -28,8 +28,10 @@ its listed criteria pass with the network disconnected.
   brand name, strength or dosage form, and see its price and quantity on hand.
 - Spec criteria: 1–4, 6–8, 11, 12.
 - Groundwork: Vitest; schema migrations under `src-tauri/migrations/` registered in `lib.rs`; the
-  `products` and `stock_movements` tables, with triggers rejecting UPDATE and DELETE on stock
-  history; `PRAGMA foreign_keys = ON`; confirming which `sql:` permission allows writes.
+  `products`, `stock_movements` and `stock_movement_reasons` tables, with triggers rejecting UPDATE
+  and DELETE on stock history; a Rust command that adds a product and its starting count in one
+  transaction; flags stored as 0 and 1; confirming that foreign keys hold on every pooled
+  connection and which `sql:` permission allows writes.
 - Fallback split if it proves too large: adding products, then searching them.
 
 ### 2. Edit product details
@@ -48,6 +50,7 @@ its listed criteria pass with the network disconnected.
 - Delivers: enter a counted total and a reason for a product. Quantity on hand becomes that total,
   and the history records the difference.
 - Spec criteria: 9, 10.
+- Implementation: the correction is one `INSERT … SELECT` statement, which is atomic on its own.
 
 ## Validation
 
@@ -69,6 +72,10 @@ Skylos gate.
   so the product screen reached from search is built once and extended, not built twice.
 - 2026-09-24: Ticket 1 kept whole despite carrying all the groundwork, because search is the only
   way anyone sees products. Splitting it would require a throwaway product list.
+
+- 2026-09-24: Amended by the cart and cash sale spec. Adding a product runs in a Rust transaction
+  command, because the SQL plugin cannot make two inserts atomic. Movement reasons moved to a
+  lookup table so later milestones can add codes without rebuilding an append-only table.
 
 ## Progress Log
 
