@@ -62,8 +62,10 @@ has no VAT to strip, so the 20% applies to the full price: an exempt item marked
 
 ## Next Milestones
 
-Roadmap level only: order, outcome and headline acceptance. Each milestone gets a detailed grill
-and spec right before it starts, once the milestones before it have taught what they can.
+This section stays at roadmap level: order, outcome and headline acceptance. Detailed specs for
+every milestone are being written under `docs/specs/` ahead of building. Specs beyond the next
+milestone are provisional and get re-validated right before they start, once the milestones before
+them have taught what they can.
 
 ### Milestone 2: Go live at the store
 

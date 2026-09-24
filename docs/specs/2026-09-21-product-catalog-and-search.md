@@ -1,6 +1,8 @@
 # Product Catalog and Search
 
-Status: approved for implementation.
+Status: approved for implementation. Amended on 2026-09-24 by the
+[cart and cash sale spec](2026-09-24-cart-and-cash-sale.md); the amendments are in the data model,
+implementation notes and validation below.
 
 A slice of milestone 1 (see [project brief](../project-brief.md)): a cashier must be able to find
 a product by name before anything can be added to a cart.
@@ -218,8 +220,8 @@ products
   strength              TEXT
   dosage_form           TEXT
   price_centavos        INTEGER NOT NULL   greater than 0
-  is_vat_exempt         INTEGER NOT NULL   0 or 1, default 0
-  is_discount_eligible  INTEGER NOT NULL   0 or 1, default 1
+  is_vat_exempt         INTEGER NOT NULL   CHECK IN (0, 1), default 0
+  is_discount_eligible  INTEGER NOT NULL   CHECK IN (0, 1), default 1
   created_at            TEXT NOT NULL      ISO 8601, UTC
   updated_at            TEXT NOT NULL      ISO 8601, UTC
 
@@ -227,19 +229,35 @@ stock_movements
   id                    TEXT PRIMARY KEY   client-generated UUID
   product_id            TEXT NOT NULL      references products
   quantity_change       INTEGER NOT NULL
-  reason                TEXT NOT NULL      starting_count, recount, damaged, expired, missing, other
+  reason                TEXT NOT NULL      references stock_movement_reasons
   note                  TEXT
   created_at            TEXT NOT NULL      ISO 8601, UTC
+
+stock_movement_reasons
+  code                  TEXT PRIMARY KEY   seeded with starting_count, recount, damaged,
+                                           expired, missing, other
 ```
 
-Triggers on `stock_movements` reject every UPDATE and DELETE. Reasons are stored as stable codes
-and shown to people as labels.
+Triggers on `stock_movements` reject every UPDATE and DELETE. Reason codes live in
+`stock_movement_reasons`, seeded by migrations, so a later milestone adds a code with one INSERT
+instead of rebuilding this append-only table. Codes are shown to people as labels.
 
 ## Implementation Notes
 
 - The schema is created through tauri-plugin-sql migrations, with SQL files under
   `src-tauri/migrations/` registered in `lib.rs`. `check-file-size.sh` already skips migrations.
-- SQLite ignores foreign keys unless `PRAGMA foreign_keys = ON` is set on the connection.
+- Adding a product and its Starting count movement is one transaction, run by a Rust command that
+  borrows the SQL plugin's pool. The plugin has no transaction API, and each of its calls borrows
+  its own pooled connection. See the [architecture](../architecture/index.md#database-access).
+- Stock corrections are one `INSERT … SELECT` statement that computes the difference and appends
+  the movement. A single statement is atomic, so corrections need no Rust.
+- Flags are passed from TypeScript as 0 and 1. The plugin binds a JavaScript boolean as JSON, which
+  would store the text `'true'`; the CHECK constraints make that mistake fail loudly.
+- The plugin binds every JavaScript number as a float. Centavos stay exact because an INTEGER column
+  stores a whole-number float as an integer, which validation confirms with `typeof()`.
+- Foreign keys are a per-connection setting and the plugin's pool opens several connections.
+  sqlx-sqlite 0.8.6 turns them on for every connection it opens, confirmed in its source.
+  Validation confirms it at runtime rather than setting the pragma once.
 - Confirm which `sql:` permission INSERT requires. The shell only granted `sql:default`, which may
   be read-only.
 - Escape `%` and `_` in search input before building LIKE patterns, so typing "50%" is not
@@ -255,7 +273,8 @@ Risk lane: Critical. The slice stores money and introduces the first persistent 
   correction difference. This introduces Vitest, already listed as planned in
   [quality](../quality.md).
 - Integration evidence in the running app: add, edit, search and correct, then read the rows back
-  with `sqlite3`, and confirm UPDATE and DELETE on `stock_movements` are rejected.
+  with `sqlite3`, confirm UPDATE and DELETE on `stock_movements` are rejected, and confirm with
+  `typeof()` that prices are stored as integers and flags as 0 or 1.
 - `./scripts/check-sonata.sh` and the Skylos gate.
 
 ## Open Risks
