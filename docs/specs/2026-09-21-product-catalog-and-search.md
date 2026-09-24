@@ -271,7 +271,8 @@ Risk lane: Critical. The slice stores money and introduces the first persistent 
 
 - **Admin-only stock changes.** Stated as a requirement during this grill, then deferred to keep
   milestone 1 single-cashier with no authentication, as the project brief says. In this slice,
-  anyone at the till can set starting counts and enter corrections. When staff roles arrive:
+  anyone at the till can set starting counts and enter corrections. Staff roles are scheduled for
+  milestone 2 in the project brief. When they arrive:
   - Starting counts and corrections become admin-only.
   - Decide whether price edits should be admin-only too. Unrestricted price edits at the till
     allow a discount to be given by editing a price, ringing the sale, and editing it back.

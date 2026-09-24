@@ -4,7 +4,9 @@
 
 - Kind: a runnable shell exists. No point-of-sale behavior is implemented.
 - Stack: Tauri 2 desktop shell; React 19 with TypeScript, Vite, and Tailwind 4; SQLite; pnpm.
-- Deployment: one on-premise machine in a single store. Local-first, offline-capable.
+- Deployment: one Windows PC in a single store, developed on macOS. Local-first, offline-capable.
+  macOS renders the app with WebKit and Windows with Chromium-based WebView2, so behavior verified
+  on the development machine is not verified for the till.
 - Cloud: none. Sync is the stated destination but is deferred past the current milestone.
 
 ## System Map
@@ -17,8 +19,10 @@ Only what exists is recorded here. Layers get documented when the code needs the
   through it, so schema, migrations, and a future sync engine have one place to attach.
 - `src-tauri/` — Rust shell. `lib.rs` registers `tauri-plugin-sql` and nothing else; the demo
   `greet` command and `tauri-plugin-opener` were removed rather than left as scaffolding.
-- Database file: `~/Library/Application Support/com.christianrazul.steward/steward.db`, resolved
-  by the SQL plugin from the `sqlite:steward.db` URL.
+- Database file: resolved by the SQL plugin from the `sqlite:steward.db` URL into the app's data
+  directory. On the macOS development machine that is
+  `~/Library/Application Support/com.christianrazul.steward/steward.db`. On the Windows till it is
+  expected under `%APPDATA%\com.christianrazul.steward\`, not yet verified on Windows.
 - No server, no cloud component, no second terminal, and no schema yet.
 
 Planned till behavior — catalog search, cart, discount application, cash tender, sale completion —

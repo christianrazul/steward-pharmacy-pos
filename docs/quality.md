@@ -32,7 +32,7 @@ Verified toolchain: rustc 1.98.1, cargo 1.98.1, Node 24.13, pnpm 10.34.2.
 | Unit tests | Not configured | planned |
 | Exercise primary behavior | Complete one cash sale end to end with the network disconnected | planned |
 | Observe failures | Terminal output of `pnpm tauri dev`, plus the webview devtools console | verified |
-| Reset/cleanup | Delete `~/Library/Application Support/com.christianrazul.steward/steward.db` | planned |
+| Reset/cleanup | Delete `~/Library/Application Support/com.christianrazul.steward/steward.db` (macOS development machine) | planned |
 
 The application shell is verified only as a shell: the window opens and the local SQLite database
 is created and queried. No point-of-sale behavior exists yet.

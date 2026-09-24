@@ -12,7 +12,8 @@ can read the store's numbers without standing at the counter.
 - Primary user: the cashier at the counter, ringing up walk-in sales during store hours.
 - Secondary users: the pharmacist or owner, who maintains the product catalog and reads sales figures.
 - Operating environment: one counter terminal in a single Philippine retail pharmacy. A desktop
-  application on the store's own machine. Internet is not assumed, and a sale must complete without it.
+  application on the store's Windows PC. Internet is not assumed, and a sale must complete
+  without it.
 
 ## Current Milestone
 
@@ -54,6 +55,111 @@ This computation applies to VAT-able products only. A product that is VAT-exempt
 has no VAT to strip, so the 20% applies to the full price: an exempt item marked 100.00 comes to
 80.00. See the [product catalog spec](specs/2026-09-21-product-catalog-and-search.md).
 
+## Next Milestones
+
+Roadmap level only: order, outcome and headline acceptance. Each milestone gets a detailed grill
+and spec right before it starts, once the milestones before it have taught what they can.
+
+### Milestone 2: Go live at the store
+
+Outcome: the store rings up every real sale in Steward and retires the handwritten logbook.
+
+Milestone 1 ends at a working demo. Milestone 2 closes the gap between that and a till the store
+can rely on:
+
+- Steward installed and running on the store's Windows PC.
+- Voiding a mistaken sale until the day is closed, so a total already checked against the drawer
+  never changes. The voided sale stays in the history, marked as voided, and its stock goes back.
+  A cashier will ring something up wrong on the first day. Returns remain deferred.
+- An end-of-day close showing the day's sales total for checking the cash drawer. The Problem
+  section names manual reconciliation as a pain, but nothing delivered it before this milestone.
+- Automatic backups when the day is closed, written into a folder that a cloud sync app such as
+  Google Drive or Dropbox uploads when the internet is up. Steward itself never needs the
+  internet. The copy survives a dead disk, theft and fire; its cost is dependence on a sync app
+  staying installed and signed in on the store machine.
+- Staff accounts with logins and roles. Voids and stock corrections are admin-only, and each one
+  records who made it. Without this, anyone could void a cash sale after the customer leaves and
+  keep the money while the drawer still balances. Logins protect actions in Steward, not the
+  database file itself.
+- A one-week parallel run. Steward and the logbook both record every sale, and the logbook is
+  retired after a week in which every daily difference between them has been explained and none
+  was caused by Steward. Rejected: switching over on a single day, which leaves nothing to fall
+  back on if that day goes wrong.
+
+The store takes cash only, so milestone 2 stays cash-only. If it starts accepting GCash or cards,
+the first step is recording each sale's payment method so the end-of-day total can split by
+method. Without that, a non-cash sale either goes unrecorded or makes the drawer look short.
+
+The dangerous drugs register stays on paper at go-live. Steward rings up those sales and tracks
+their stock like any other product.
+
+Acceptance: every sale at the store goes through Steward on the store's Windows PC, with staff
+logged in. Voids and stock corrections need an admin. Closing the day shows the sales total and
+writes a backup. A backup has been restored onto another machine at least once, because a backup
+nobody has restored may not work. The logbook is retired after the parallel week.
+
+Rejected as milestone 2: cloud sync, which would be designed around guessed usage rather than
+real sales, and checkout features such as a barcode scanner and a receipt printer, which would
+speed up a till the store is not yet using.
+
+For the detailed milestone 2 grill:
+
+- Whether price edits are admin-only too. Editing a price, ringing a sale and changing it back
+  is the same kind of gap as voids.
+- How an admin who forgets their password gets back in, with no internet to reset through.
+- How the Windows installer gets built. Tauri supports building Windows installers from macOS
+  only experimentally, so it needs a Windows machine or a Windows CI runner. A GitHub Actions
+  workflow needs a `!.github/` exception in `.gitignore`, because the developer's global gitignore
+  hides `.github/`.
+- Testing on Windows well before go-live. macOS renders the app with Safari's engine and Windows
+  with Chromium's, so what looks right on the development Mac can differ at the store.
+- Whether the installer bundles WebView2. The default installer downloads it when missing, which
+  fails on a store PC without internet.
+- Whether to sign the installer. Unsigned, Windows warns on first run; a signing certificate costs
+  money every year.
+
+### Milestone 3: Deliveries and expiry
+
+Outcome: stock that arrives and expires is recorded as what it is.
+
+Record deliveries by supplier instead of as recounts, track batches with expiry dates, and list
+stock expiring soon. After go-live, deliveries become the stock change Steward records most
+wrongly, and expired stock is the store's most direct money loss. Batches change how stock is
+stored, so they come before sync. Whether sales use up the earliest-expiring batch first is a
+question for this milestone's grill.
+
+### Milestone 4: Barcode scanning
+
+Outcome: the cashier scans a box instead of typing.
+
+Each product's barcode is captured by scanning its box once. It is a small job that speeds up
+every sale, and it follows deliveries because receiving is when every box passes through
+someone's hands.
+
+### Milestone 5: The owner's view from anywhere
+
+Outcome: the owner reads the store's numbers without standing at the counter.
+
+Cloud sync and remote reporting, the destination in the Product Vision. By this point real use
+has settled how data is stored, which is why sync waited. A cheap interim can land earlier if
+wanted: closing the day also writes a readable daily summary next to the backup, so the owner can
+check it on a phone.
+
+### Milestone 6: Official receipts
+
+Outcome: Steward issues the store's official receipts.
+
+BIR accreditation and a receipt printer. The store keeps writing official receipts by hand until
+then, so a printer adds little earlier. The application takes a long time to process, so it can be
+filed well before the build starts.
+
+### Milestone 7: More tills and branches
+
+Outcome: more than one till, and branches of this business, share one record.
+
+A second terminal and branches, built on sync. Official receipt numbering is easier to get right
+on one till first, which is why this follows milestone 6.
+
 ## Problem
 
 Sales are written by hand in a logbook and stock is counted physically. There is no reliable
@@ -70,29 +176,26 @@ and leaves the store's most audit-sensitive arithmetic dependent on whoever is a
   replace a bookkeeper.
 - E-commerce. No online ordering, storefront, or delivery.
 - Multi-tenant SaaS. Other pharmacies are not customers. Additional branches of this business are
-  a separate question, deferred below.
+  scheduled in milestone 7.
 
 ## Later / Not Now
 
-- Cloud sync and off-site reporting
-- Second terminal, and multi-branch for this business
-- Non-cash payment: cards, GCash, other e-wallets
-- Returns, voids, and refunds
-- Purchase orders, supplier management, receiving
-- Batch and expiry tracking, FEFO dispensing
-- Barcode scanner and receipt printer hardware
-- Staff accounts, roles, and audit trail, including restricting stock changes to admins
-- RA 9165 dangerous drugs register
-- BIR accreditation and Permit to Use
+Scheduled items have moved into Next Milestones. These have no milestone yet:
 
-Voids and the RA 9165 register are deferred, not dismissed. A real pharmacy cannot run without
-them for long.
+- Non-cash payment: cards, GCash, other e-wallets
+- Returns and refunds
+- Purchase orders
+- Digital RA 9165 dangerous drugs register
+
+The dangerous drugs register is deferred, not dismissed. It stays on paper until Steward takes it
+over.
 
 ## Constraints
 
 - Stack: Tauri 2 desktop shell, React 19 with TypeScript, Vite, Tailwind, SQLite.
 - Package manager: pnpm.
-- Runtime: the store's own machine. The application must function with no internet connection.
+- Runtime: a Windows PC in the store, developed on macOS. The application must function with no
+  internet connection.
 - Data: the local SQLite database is the source of truth. Client-generated UUID primary keys,
   sales recorded as immutable append-only rows, and stock held as a ledger of movements rather
   than a mutable quantity column.
@@ -105,7 +208,4 @@ them for long.
 
 ## Open Questions
 
-- Counter hardware: which machine and operating system the till runs on, which decides the Tauri
-  build target.
-- Backup: where the local SQLite file is backed up and how often. A single local database is the
-  source of truth, so this must be answered before the till handles real sales.
+None at brief level. Questions for a specific milestone live with that milestone above.
