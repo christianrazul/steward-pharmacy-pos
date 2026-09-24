@@ -85,8 +85,8 @@ can rely on:
   Google Drive or Dropbox uploads when the internet is up. Steward itself never needs the
   internet. The copy survives a dead disk, theft and fire; its cost is dependence on a sync app
   staying installed and signed in on the store machine.
-- Staff accounts with logins and roles. Voids and stock corrections are admin-only, and each one
-  records who made it. Without this, anyone could void a cash sale after the customer leaves and
+- Staff accounts with logins and roles. Voids, stock corrections and catalog changes, prices
+  included, are admin-only, and each one records who made it. Without this, anyone could void a cash sale after the customer leaves and
   keep the money while the drawer still balances. Logins protect actions in Steward, not the
   database file itself.
 - A one-week parallel run. Steward and the logbook both record every sale, and the logbook is
@@ -110,21 +110,11 @@ Rejected as milestone 2: cloud sync, which would be designed around guessed usag
 real sales, and checkout features such as a barcode scanner and a receipt printer, which would
 speed up a till the store is not yet using.
 
-For the detailed milestone 2 grill:
-
-- Whether price edits are admin-only too. Editing a price, ringing a sale and changing it back
-  is the same kind of gap as voids.
-- How an admin who forgets their password gets back in, with no internet to reset through.
-- How the Windows installer gets built. Tauri supports building Windows installers from macOS
-  only experimentally, so it needs a Windows machine or a Windows CI runner. A GitHub Actions
-  workflow needs a `!.github/` exception in `.gitignore`, because the developer's global gitignore
-  hides `.github/`.
-- Testing on Windows well before go-live. macOS renders the app with Safari's engine and Windows
-  with Chromium's, so what looks right on the development Mac can differ at the store.
-- Whether the installer bundles WebView2. The default installer downloads it when missing, which
-  fails on a store PC without internet.
-- Whether to sign the installer. Unsigned, Windows warns on first run; a signing certificate costs
-  money every year.
+Detailed specs: [go-live controls](specs/2026-09-24-go-live-controls.md) and
+[Windows deployment and cutover](specs/2026-09-24-windows-deployment-and-cutover.md). They settle
+what this section left open: price edits are admin-only; a locked-out admin is recovered by
+another admin or a one-time recovery code; GitHub Actions builds an unsigned installer that
+carries WebView2; and every ticket is checked on Windows before it is done.
 
 ### Milestone 3: Deliveries and expiry
 

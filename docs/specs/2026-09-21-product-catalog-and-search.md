@@ -290,11 +290,11 @@ Risk lane: Critical. The slice stores money and introduces the first persistent 
 
 - **Admin-only stock changes.** Stated as a requirement during this grill, then deferred to keep
   milestone 1 single-cashier with no authentication, as the project brief says. In this slice,
-  anyone at the till can set starting counts and enter corrections. Staff roles are scheduled for
-  milestone 2 in the project brief. When they arrive:
+  anyone at the till can set starting counts and enter corrections. Staff roles are specified for
+  milestone 2 in the [go-live controls spec](2026-09-24-go-live-controls.md). When they arrive:
   - Starting counts and corrections become admin-only.
-  - Decide whether price edits should be admin-only too. Unrestricted price edits at the till
-    allow a discount to be given by editing a price, ringing the sale, and editing it back.
+  - Price edits become admin-only too. Unrestricted price edits at the till allow a discount to
+    be given by editing a price, ringing the sale, and editing it back.
   - An in-app restriction does not protect the database file itself. Anyone with access to the
     machine can edit it with another SQLite tool. That needs operating-system controls or a
     server-side record kept through sync.

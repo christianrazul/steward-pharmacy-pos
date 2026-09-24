@@ -1,6 +1,6 @@
 # Go-Live Controls
 
-Status: draft, grilled internally and awaiting confirmation.
+Status: approved for implementation.
 
 The software side of milestone 2 ([#5](https://github.com/christianrazul/steward-pharmacy-pos/issues/5)):
 staff accounts, voids, the end-of-day close, and backups. Building, installing, and the cutover from

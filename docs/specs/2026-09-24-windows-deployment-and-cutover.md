@@ -1,6 +1,6 @@
 # Windows Deployment and Cutover
 
-Status: draft, grilled internally and awaiting confirmation.
+Status: approved for implementation.
 
 How milestone 2 ([#5](https://github.com/christianrazul/steward-pharmacy-pos/issues/5)) gets
 Steward onto the store's Windows PC and retires the logbook: building the installer, installing
