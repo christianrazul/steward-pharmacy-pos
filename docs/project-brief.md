@@ -19,6 +19,11 @@ can read the store's numbers without standing at the counter.
 
 Outcome: a cashier completes one cash sale end to end, offline, and the sale is durably recorded.
 
+Issues: the catalog as [#1](https://github.com/christianrazul/steward-pharmacy-pos/issues/1),
+[#2](https://github.com/christianrazul/steward-pharmacy-pos/issues/2) and
+[#3](https://github.com/christianrazul/steward-pharmacy-pos/issues/3); the cart and cash sale as
+[#4](https://github.com/christianrazul/steward-pharmacy-pos/issues/4).
+
 Acceptance behavior, observed with the network disconnected:
 
 1. A cashier finds a product by name and adds it to a cart with an adjustable quantity.
@@ -63,6 +68,7 @@ and spec right before it starts, once the milestones before it have taught what 
 ### Milestone 2: Go live at the store
 
 Outcome: the store rings up every real sale in Steward and retires the handwritten logbook.
+Issue: [#5](https://github.com/christianrazul/steward-pharmacy-pos/issues/5).
 
 Milestone 1 ends at a working demo. Milestone 2 closes the gap between that and a till the store
 can rely on:
@@ -121,6 +127,7 @@ For the detailed milestone 2 grill:
 ### Milestone 3: Deliveries and expiry
 
 Outcome: stock that arrives and expires is recorded as what it is.
+Issue: [#6](https://github.com/christianrazul/steward-pharmacy-pos/issues/6).
 
 Record deliveries by supplier instead of as recounts, track batches with expiry dates, and list
 stock expiring soon. After go-live, deliveries become the stock change Steward records most
@@ -131,6 +138,7 @@ question for this milestone's grill.
 ### Milestone 4: Barcode scanning
 
 Outcome: the cashier scans a box instead of typing.
+Issue: [#7](https://github.com/christianrazul/steward-pharmacy-pos/issues/7).
 
 Each product's barcode is captured by scanning its box once. It is a small job that speeds up
 every sale, and it follows deliveries because receiving is when every box passes through
@@ -139,6 +147,7 @@ someone's hands.
 ### Milestone 5: The owner's view from anywhere
 
 Outcome: the owner reads the store's numbers without standing at the counter.
+Issue: [#8](https://github.com/christianrazul/steward-pharmacy-pos/issues/8).
 
 Cloud sync and remote reporting, the destination in the Product Vision. By this point real use
 has settled how data is stored, which is why sync waited. A cheap interim can land earlier if
@@ -148,6 +157,7 @@ check it on a phone.
 ### Milestone 6: Official receipts
 
 Outcome: Steward issues the store's official receipts.
+Issue: [#9](https://github.com/christianrazul/steward-pharmacy-pos/issues/9).
 
 BIR accreditation and a receipt printer. The store keeps writing official receipts by hand until
 then, so a printer adds little earlier. The application takes a long time to process, so it can be
@@ -156,6 +166,7 @@ filed well before the build starts.
 ### Milestone 7: More tills and branches
 
 Outcome: more than one till, and branches of this business, share one record.
+Issue: [#10](https://github.com/christianrazul/steward-pharmacy-pos/issues/10).
 
 A second terminal and branches, built on sync. Official receipt numbering is easier to get right
 on one till first, which is why this follows milestone 6.
